@@ -1,0 +1,38 @@
+import io.github.valacuz.proguard.dictionary.tasks.generate.strategy.*
+
+plugins {
+    id 'com.android.application'
+    id 'io.github.valacuz.proguard-dictionary-generator'
+}
+
+android {
+    compileSdk 31
+
+    defaultConfig {
+        applicationId "com.valacuz.sample"
+        minSdk 23
+        targetSdk 31
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+}
