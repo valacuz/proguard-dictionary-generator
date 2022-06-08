@@ -154,13 +154,17 @@ class PluginTaskConfigurationTest {
         assertThat(configFile.exists()).isTrue()
 
         // and config output content is correct.
-        val configContent = configFile.readText()
-        val expectedContent = helper.getObfuscationConfigContent(
-            "field_obfuscation_dictionary.txt",
-            "class_obfuscation_dictionary.txt",
-            "package_obfuscation_dictionary.txt"
-        )
-        assertThat(configContent).isEqualTo(expectedContent)
+        val outputDirectory = File(testProjectRoot.root, "$androidProjectName/build/tmp/dictionary")
+        val contents = configFile.readLines()
+        assertThat(contents.size).isEqualTo(3)
+        assertThat(contents[0]).contains("-obfuscationdictionary")
+        assertThat(contents[0]).contains("field_obfuscation_dictionary.txt")
+
+        assertThat(contents[1]).contains("-classobfuscationdictionary")
+        assertThat(contents[1]).contains("class_obfuscation_dictionary.txt")
+
+        assertThat(contents[2]).contains("-packageobfuscationdictionary")
+        assertThat(contents[2]).contains("package_obfuscation_dictionary.txt")
     }
 
     @Test

@@ -8,6 +8,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.TaskOutputs
 import java.io.File
 import java.io.IOException
 import javax.inject.Inject
@@ -30,19 +31,19 @@ open class GenerateProguardDictionaryTask @Inject constructor(
         generateDictionary(
             config.fieldMethodObfuscationStrategy.name,
             "fields and methods",
-            this.outputs.files.elementAt(FIELD_METHOD_OBFUSCATION_FILE_INDEX)
+            outputs.getFieldClassDictionaryFile()
         )
         // Generate classes obfuscation dictionary.
         generateDictionary(
             config.classObfuscationStrategy.name,
             "classes",
-            this.outputs.files.elementAt(CLASS_OBFUSCATION_FILE_INDEX)
+            outputs.getClassDictionaryFile()
         )
         // Generate packages obfuscation dictionary.
         generateDictionary(
             config.packageObfuscationStrategy.name,
             "packages",
-            this.outputs.files.elementAt(PACKAGE_OBFUSCATION_FILE_INDEX)
+            outputs.getPackageDictionaryFile()
         )
 
         // Write configuration file if needed.
@@ -67,19 +68,19 @@ open class GenerateProguardDictionaryTask @Inject constructor(
 
     @Throws(IOException::class)
     private fun writeDictionaryConfigurationFile() {
-        val file = outputs.files.elementAt(CONFIG_FILE_INDEX)
-        val parent = file.parentFile ?: return
+        val configFile = outputs.getConfigurationFile()
+        val parent = configFile.parentFile ?: return
 
         if (parent.exists() || parent.mkdirs()) {
-            file.writeText(
+            configFile.writeText(
                 getObfuscationSettingContent(
-                    config.fieldMethodDictionaryFileName,
-                    config.classDictionaryFileName,
-                    config.packageDictionaryFileName
+                    outputs.getFieldClassDictionaryFile().absolutePath,
+                    outputs.getClassDictionaryFile().absolutePath,
+                    outputs.getPackageDictionaryFile().absolutePath
                 )
             )
         } else {
-            throw IOException("Failed to create output folder at ${file.path}.")
+            throw IOException("Failed to create output folder at ${configFile.path}.")
         }
     }
 
@@ -93,6 +94,18 @@ open class GenerateProguardDictionaryTask @Inject constructor(
         |-classobfuscationdictionary $classDictPath
         |-packageobfuscationdictionary $packageDictPath
         |""".trimMargin()
+
+    private fun TaskOutputs.getConfigurationFile(): File =
+        this.files.elementAt(CONFIG_FILE_INDEX)
+
+    private fun TaskOutputs.getFieldClassDictionaryFile(): File =
+        this.files.elementAt(FIELD_METHOD_OBFUSCATION_FILE_INDEX)
+
+    private fun TaskOutputs.getClassDictionaryFile(): File =
+        this.files.elementAt(CLASS_OBFUSCATION_FILE_INDEX)
+
+    private fun TaskOutputs.getPackageDictionaryFile(): File =
+        this.files.elementAt(PACKAGE_OBFUSCATION_FILE_INDEX)
 
     companion object {
         private const val TAG = "GenerateProguardDictionaryTask"
