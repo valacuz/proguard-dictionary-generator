@@ -28,30 +28,30 @@ class DictionaryGeneratorDelegate {
         }
     }
 
-    private fun prepare(project: Project, config: DictionaryGeneratorPluginExtension) {
+    private fun prepare(project: Project, extension: DictionaryGeneratorPluginExtension) {
         if (project.isAndroidAppProject()) {
-            addGenerateDictionaryTask(project, config)
+            addGenerateDictionaryTask(project, extension)
         } else {
             logger.info("$TAG: ⚠ The project is not an android application, skip creating task.")
         }
     }
 
-    private fun prepare(subprojects: Set<Project>, config: DictionaryGeneratorPluginExtension) {
+    private fun prepare(subprojects: Set<Project>, extension: DictionaryGeneratorPluginExtension) {
         val androidAppSubProject = subprojects.filter { it.isAndroidAppProject() }
         if (androidAppSubProject.isNotEmpty()) {
             androidAppSubProject.forEach {
-                addGenerateDictionaryTask(it, config)
+                addGenerateDictionaryTask(it, extension)
             }
         } else {
             logger.info("$TAG: ⚠ Not found android application on sub project, skip creating task.")
         }
     }
 
-    private fun addGenerateDictionaryTask(project: Project, config: DictionaryGeneratorPluginExtension) {
+    private fun addGenerateDictionaryTask(project: Project, extension: DictionaryGeneratorPluginExtension) {
         val androidExtension = project.getAndroidAppExtension()
         val enabledMinifiedVariants = androidExtension?.applicationVariants
             ?.filterMinifiedBuildType()
-            ?.filterByVariantPattern(config.variantNameFilter)
+            ?.filterByVariantPattern(extension.variantNameFilter)
             ?: emptySet()
 
         if (enabledMinifiedVariants.isEmpty()) {
@@ -74,19 +74,11 @@ class DictionaryGeneratorDelegate {
             project.tasks.register(
                 fullTaskName,
                 GenerateProguardDictionaryTask::class.java,
-                config,
+                extension,
                 isEnabledLog,
             ).configure {
                 description = "Generates dictionary for Proguard or R8 code obfuscation."
                 group = "Build"
-
-                // Registering possible output files for this task.
-                outputs.files(
-                    config.configFilePath,
-                    config.fieldMethodDictionaryPath,
-                    config.classDictionaryPath,
-                    config.packageDictionaryPath,
-                )
             }
 
             // Registering task dependency.

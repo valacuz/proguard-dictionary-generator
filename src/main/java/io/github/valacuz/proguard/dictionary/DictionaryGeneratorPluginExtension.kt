@@ -7,18 +7,15 @@ import org.gradle.api.tasks.Optional
 open class DictionaryGeneratorPluginExtension {
 
     companion object {
-        const val DEFAULT_OUTPUT_PATH = "build/tmp/dictionary"
+        private const val DEFAULT_OUTPUT_PATH = "build/tmp/dictionary"
 
-        const val DEFAULT_CONFIG_FILE_NAME = "proguard_dictionary_config.txt"
+        const val DEFAULT_CONFIG_FILE_PATH = "${DEFAULT_OUTPUT_PATH}/proguard_dictionary_config.txt"
 
-        const val FIELD_OBFUSCATION_FILE_NAME = "field_obfuscation_dictionary.txt"
+        internal const val FIELD_OBFUSCATION_FILE_PATH = "${DEFAULT_OUTPUT_PATH}/field_obfuscation_dictionary.txt"
 
-        const val CLASS_OBFUSCATION_FILE_NAME = "class_obfuscation_dictionary.txt"
+        internal const val CLASS_OBFUSCATION_FILE_PATH = "${DEFAULT_OUTPUT_PATH}/class_obfuscation_dictionary.txt"
 
-        const val PACKAGE_OBFUSCATION_FILE_NAME = "package_obfuscation_dictionary.txt"
-
-        @JvmStatic
-        val defaultConfigFileName = "$DEFAULT_OUTPUT_PATH/$DEFAULT_CONFIG_FILE_NAME"
+        internal const val PACKAGE_OBFUSCATION_FILE_PATH = "${DEFAULT_OUTPUT_PATH}/package_obfuscation_dictionary.txt"
     }
 
     /**
@@ -33,16 +30,13 @@ open class DictionaryGeneratorPluginExtension {
      * Output path of the obfuscation dictionary configuration file when [createConfigFile] is set to `true`.
      */
     @get:Input
-    val configFilePath: String = "${DEFAULT_OUTPUT_PATH}/${DEFAULT_CONFIG_FILE_NAME}"
+    var configFilePath: String = DEFAULT_CONFIG_FILE_PATH
 
     /**
      * Output path for obfuscation dictionary for fields and methods.
      */
     @get:Input
-    val fieldMethodDictionaryPath: String = "$DEFAULT_OUTPUT_PATH/$FIELD_OBFUSCATION_FILE_NAME"
-
-    @get:Input
-    val fieldMethodDictionaryFileName = FIELD_OBFUSCATION_FILE_NAME
+    val fieldMethodDictionaryPath: String = FIELD_OBFUSCATION_FILE_PATH
 
     /**
      * Determine obfuscation strategy for fields and methods.
@@ -54,10 +48,7 @@ open class DictionaryGeneratorPluginExtension {
      * Output path for obfuscation dictionary for classes.
      */
     @get:Input
-    val classDictionaryPath: String = "$DEFAULT_OUTPUT_PATH/$CLASS_OBFUSCATION_FILE_NAME"
-
-    @get:Input
-    val classDictionaryFileName = CLASS_OBFUSCATION_FILE_NAME
+    val classDictionaryPath: String = CLASS_OBFUSCATION_FILE_PATH
 
     /**
      * Determine obfuscation strategy for classes.
@@ -69,10 +60,7 @@ open class DictionaryGeneratorPluginExtension {
      * Output path for obfuscation dictionary for packages.
      */
     @get:Input
-    val packageDictionaryPath: String = "$DEFAULT_OUTPUT_PATH/$PACKAGE_OBFUSCATION_FILE_NAME"
-
-    @get:Input
-    val packageDictionaryFileName = PACKAGE_OBFUSCATION_FILE_NAME
+    val packageDictionaryPath: String = PACKAGE_OBFUSCATION_FILE_PATH
 
     /**
      * Determine obfuscation strategy for packages.
