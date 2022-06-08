@@ -5,16 +5,16 @@ import io.github.valacuz.proguard.dictionary.tasks.generate.factory.DefaultGener
 import io.github.valacuz.proguard.dictionary.tasks.generate.factory.GeneratorFactory
 import io.github.valacuz.proguard.dictionary.util.Logger
 import org.gradle.api.DefaultTask
+import org.gradle.api.Project
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.TaskAction
-import org.gradle.api.tasks.TaskOutputs
 import java.io.File
 import java.io.IOException
 import javax.inject.Inject
 
 open class GenerateProguardDictionaryTask @Inject constructor(
-    @get:Nested val config: DictionaryGeneratorPluginExtension,
+    @get:Nested val extension: DictionaryGeneratorPluginExtension,
     @get:Input val isEnabledLog: Boolean,
 ) : DefaultTask() {
 
@@ -29,26 +29,26 @@ open class GenerateProguardDictionaryTask @Inject constructor(
 
         // Generate fields and methods obfuscation dictionary.
         generateDictionary(
-            config.fieldMethodObfuscationStrategy.name,
+            extension.fieldMethodObfuscationStrategy.name,
             "fields and methods",
-            outputs.getFieldClassDictionaryFile()
+            project.getFieldClassDictionaryFile()
         )
         // Generate classes obfuscation dictionary.
         generateDictionary(
-            config.classObfuscationStrategy.name,
+            extension.classObfuscationStrategy.name,
             "classes",
-            outputs.getClassDictionaryFile()
+            project.getClassDictionaryFile()
         )
         // Generate packages obfuscation dictionary.
         generateDictionary(
-            config.packageObfuscationStrategy.name,
+            extension.packageObfuscationStrategy.name,
             "packages",
-            outputs.getPackageDictionaryFile()
+            project.getPackageDictionaryFile()
         )
 
         // Write configuration file if needed.
-        if (config.createConfigFile) {
-            writeDictionaryConfigurationFile()
+        if (extension.createConfigFile) {
+            writeDictionaryConfigurationFile(project.getConfigurationFile(extension.configFilePath))
         }
     }
 
@@ -67,16 +67,15 @@ open class GenerateProguardDictionaryTask @Inject constructor(
     }
 
     @Throws(IOException::class)
-    private fun writeDictionaryConfigurationFile() {
-        val configFile = outputs.getConfigurationFile()
+    private fun writeDictionaryConfigurationFile(configFile: File) {
         val parent = configFile.parentFile ?: return
 
         if (parent.exists() || parent.mkdirs()) {
             configFile.writeText(
                 getObfuscationSettingContent(
-                    outputs.getFieldClassDictionaryFile().absolutePath,
-                    outputs.getClassDictionaryFile().absolutePath,
-                    outputs.getPackageDictionaryFile().absolutePath
+                    project.getFieldClassDictionaryFile().absolutePath,
+                    project.getClassDictionaryFile().absolutePath,
+                    project.getPackageDictionaryFile().absolutePath
                 )
             )
         } else {
@@ -95,25 +94,21 @@ open class GenerateProguardDictionaryTask @Inject constructor(
         |-packageobfuscationdictionary $packageDictPath
         |""".trimMargin()
 
-    private fun TaskOutputs.getConfigurationFile(): File =
-        this.files.elementAt(CONFIG_FILE_INDEX)
+    private fun Project.getConfigurationFile(path: String): File =
+        File(this.projectDir, path)
 
-    private fun TaskOutputs.getFieldClassDictionaryFile(): File =
-        this.files.elementAt(FIELD_METHOD_OBFUSCATION_FILE_INDEX)
+    private fun Project.getFieldClassDictionaryFile(): File =
+        File(this.projectDir, DictionaryGeneratorPluginExtension.FIELD_OBFUSCATION_FILE_PATH)
 
-    private fun TaskOutputs.getClassDictionaryFile(): File =
-        this.files.elementAt(CLASS_OBFUSCATION_FILE_INDEX)
+    private fun Project.getClassDictionaryFile(): File =
+        File(this.projectDir, DictionaryGeneratorPluginExtension.CLASS_OBFUSCATION_FILE_PATH)
 
-    private fun TaskOutputs.getPackageDictionaryFile(): File =
-        this.files.elementAt(PACKAGE_OBFUSCATION_FILE_INDEX)
+    private fun Project.getPackageDictionaryFile(): File =
+        File(this.projectDir, DictionaryGeneratorPluginExtension.PACKAGE_OBFUSCATION_FILE_PATH)
 
     companion object {
         private const val TAG = "GenerateProguardDictionaryTask"
 
         const val TASK_NAME = "generateProguardDict"
-        const val CONFIG_FILE_INDEX = 0
-        const val FIELD_METHOD_OBFUSCATION_FILE_INDEX = 1
-        const val CLASS_OBFUSCATION_FILE_INDEX = 2
-        const val PACKAGE_OBFUSCATION_FILE_INDEX = 3
     }
 }

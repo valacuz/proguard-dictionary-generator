@@ -73,7 +73,7 @@ This plugin creates dictionaries for Proguard / R8 [code obfuscation process](ht
             proguardFiles (
                 getDefaultProguardFile('proguard-android-optimize.txt'),
                 'proguard-rules.pro',
-                DictionaryGeneratorPluginExtension.defaultConfigFileName // Add config file
+                DictionaryGeneratorPluginExtension.DEFAULT_CONFIG_FILE_PATH // Add config file
             )
         }
     }
@@ -88,7 +88,7 @@ This plugin creates dictionaries for Proguard / R8 [code obfuscation process](ht
             proguardFiles (
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
-                DictionaryGeneratorPluginExtension.defaultConfigFileName // Add config file
+                DictionaryGeneratorPluginExtension.DEFAULT_CONFIG_FILE_PATH // Add config file
             )
         }
     }
@@ -126,10 +126,11 @@ For **Groovy**,
 ```groovy
 proguardDictGenerator {
     createConfigFile = true
+    configFilePath = DictionaryGeneratorPluginExtension.DEFAULT_CONFIG_FILE_PATH
     fieldMethodObfuscationStrategy = ObfuscationStrategy.RANDOM_CHARACTERS
     classObfuscationStrategy = ObfuscationStrategy.RANDOM_CHARACTERS
     packageObfuscationStrategy = ObfuscationStrategy.RANDOM_CHARACTERS
-    variantNameFilter = null
+    variantNameFilter = null // Regex pattern
 }
 ```
 
@@ -137,10 +138,11 @@ For **Kotlin**,
 ```kotlin
 extensions.configure(DictionaryGeneratorPluginExtension::class) {
     createConfigFile = true
+    configFilePath = DictionaryGeneratorPluginExtension.DEFAULT_CONFIG_FILE_PATH
     fieldMethodObfuscationStrategy = ObfuscationStrategy.RANDOM_CHARACTERS
     classObfuscationStrategy = ObfuscationStrategy.RANDOM_CHARACTERS
     packageObfuscationStrategy = ObfuscationStrategy.RANDOM_CHARACTERS
-    variantNameFilter = null
+    variantNameFilter = null // Regex pattern
 }
 ```
 

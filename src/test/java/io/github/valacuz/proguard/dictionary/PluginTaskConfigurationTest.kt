@@ -66,14 +66,113 @@ class PluginTaskConfigurationTest {
         assertThat(result.output)
             .contains("Generated obfuscation dictionary for packages with RandomCharacterGenerator.")
 
-        // and there is output file in exists.
-        var outputPath = "$androidProjectName/build/tmp/dictionary/field_obfuscation_dictionary.txt"
+        // and dictionary config output file is exists.
+        var outputPath = "$androidProjectName/build/tmp/dictionary/proguard_dictionary_config.txt"
+        assertThat(File(testProjectRoot.root, outputPath).exists()).isTrue()
+
+        // and there are 3 dictionary files in output directory.
+        outputPath = "$androidProjectName/build/tmp/dictionary/field_obfuscation_dictionary.txt"
         assertThat(File(testProjectRoot.root, outputPath).exists()).isTrue()
 
         outputPath = "$androidProjectName/build/tmp/dictionary/class_obfuscation_dictionary.txt"
         assertThat(File(testProjectRoot.root, outputPath).exists()).isTrue()
 
         outputPath = "$androidProjectName/build/tmp/dictionary/package_obfuscation_dictionary.txt"
+        assertThat(File(testProjectRoot.root, outputPath).exists()).isTrue()
+    }
+
+    @Test
+    fun `verify dictionary config not file created when set createConfigFile to false`() {
+        val pluginContent = """
+        |proguardDictGenerator {
+        |  createConfigFile = false
+        |}
+        |""".trimMargin()
+
+        File(testProjectRoot.root, "$androidProjectName/build.gradle").writeText(
+            helper.getAndroidModuleBuildDotGradleContent(
+                buildTypesContent = helper.getDefaultBuildTypesContent(),
+                produceFlavorsContent = "",
+                pluginContent = pluginContent,
+            )
+        )
+
+        // When run tasks `generateProguardDictRelease`.
+        val result = testProjectRoot.gradleRunner()
+            .withArguments("generateProguardDictRelease", "-P${PARAMETER_ENABLED_LOG}")
+            .build()
+
+        // Then task should execute successfully.
+        val assertTaskName = ":android-app:generateProguardDictRelease"
+        val outcome = result.task(assertTaskName)?.outcome
+        assertThat(outcome).isEqualTo(TaskOutcome.SUCCESS)
+
+        // and dictionary config output file is not exists.
+        val outputPath = "$androidProjectName/build/tmp/dictionary/proguard_dictionary_config.txt"
+        assertThat(File(testProjectRoot.root, outputPath).exists()).isFalse()
+    }
+
+    @Test
+    fun `verify dictionary config file created when change its path`() {
+        val pluginContent = """
+        |proguardDictGenerator {
+        |  configFilePath = "build/proguard_dictionary_config.txt"
+        |}
+        |""".trimMargin()
+
+        File(testProjectRoot.root, "$androidProjectName/build.gradle").writeText(
+            helper.getAndroidModuleBuildDotGradleContent(
+                buildTypesContent = helper.getDefaultBuildTypesContent(),
+                produceFlavorsContent = "",
+                pluginContent = pluginContent,
+            )
+        )
+
+        // When run tasks `generateProguardDictRelease`.
+        val result = testProjectRoot.gradleRunner()
+            .withArguments("generateProguardDictRelease", "-P${PARAMETER_ENABLED_LOG}")
+            .build()
+
+        // Then task should execute successfully.
+        val assertTaskName = ":android-app:generateProguardDictRelease"
+        val outcome = result.task(assertTaskName)?.outcome
+        assertThat(outcome).isEqualTo(TaskOutcome.SUCCESS)
+
+        // and dictionary config output file is exists.
+        val outputPath = "$androidProjectName/build/proguard_dictionary_config.txt"
+        assertThat(File(testProjectRoot.root, outputPath).exists()).isTrue()
+    }
+
+    @Test
+    fun `verify dictionary config file created when change its path outside project file`() {
+        println(File(testProjectRoot.root, "proguard_dictionary_config.txt").absolutePath)
+
+        val pluginContent = """
+        |proguardDictGenerator {
+        |  configFilePath = "proguard_dictionary_config.txt"
+        |}
+        |""".trimMargin()
+
+        File(testProjectRoot.root, "$androidProjectName/build.gradle").writeText(
+            helper.getAndroidModuleBuildDotGradleContent(
+                buildTypesContent = helper.getDefaultBuildTypesContent(),
+                produceFlavorsContent = "",
+                pluginContent = pluginContent,
+            )
+        )
+
+        // When run tasks `generateProguardDictRelease`.
+        val result = testProjectRoot.gradleRunner()
+            .withArguments("generateProguardDictRelease", "-P${PARAMETER_ENABLED_LOG}")
+            .build()
+
+        // Then task should execute successfully.
+        val assertTaskName = ":android-app:generateProguardDictRelease"
+        val outcome = result.task(assertTaskName)?.outcome
+        assertThat(outcome).isEqualTo(TaskOutcome.SUCCESS)
+
+        // and dictionary config output file is exists.
+        val outputPath = "$androidProjectName/proguard_dictionary_config.txt"
         assertThat(File(testProjectRoot.root, outputPath).exists()).isTrue()
     }
 
@@ -113,8 +212,12 @@ class PluginTaskConfigurationTest {
         assertThat(result.output)
             .contains("Generated obfuscation dictionary for packages with RandomCharacterGenerator.")
 
-        // and there is output file in exists.
-        var outputPath = "$androidProjectName/build/tmp/dictionary/field_obfuscation_dictionary.txt"
+        // and dictionary config file is exists.
+        var outputPath = "$androidProjectName/build/tmp/dictionary/proguard_dictionary_config.txt"
+        assertThat(File(testProjectRoot.root, outputPath).exists()).isTrue()
+
+        // and there are 3 dictionary files in output directory.
+        outputPath = "$androidProjectName/build/tmp/dictionary/field_obfuscation_dictionary.txt"
         assertThat(File(testProjectRoot.root, outputPath).exists()).isTrue()
 
         outputPath = "$androidProjectName/build/tmp/dictionary/class_obfuscation_dictionary.txt"
@@ -125,7 +228,7 @@ class PluginTaskConfigurationTest {
     }
 
     @Test
-    fun `verify config file created with separate file name`() {
+    fun `verify config file created with separate file for each dictionary`() {
         val pluginContent = """
         |proguardDictGenerator {
         |  createConfigFile = true
@@ -148,13 +251,12 @@ class PluginTaskConfigurationTest {
         val outcome = result.task(assertTaskName)?.outcome
         assertThat(outcome).isEqualTo(TaskOutcome.SUCCESS)
 
-        // and there is config output file in exists.
+        // and dictionary config file exists.
         val outputPath = "$androidProjectName/build/tmp/dictionary/proguard_dictionary_config.txt"
         val configFile = File(testProjectRoot.root, outputPath)
         assertThat(configFile.exists()).isTrue()
 
         // and config output content is correct.
-        val outputDirectory = File(testProjectRoot.root, "$androidProjectName/build/tmp/dictionary")
         val contents = configFile.readLines()
         assertThat(contents.size).isEqualTo(3)
         assertThat(contents[0]).contains("-obfuscationdictionary")
@@ -190,5 +292,15 @@ class PluginTaskConfigurationTest {
         assertTaskName = ":android-app:generateProguardDictProductionRelease"
         outcome = result.task(assertTaskName)?.outcome
         assertThat(outcome).isEqualTo(TaskOutcome.SUCCESS)
+
+        // and there are 3 dictionary files in output directory.
+        var outputPath = "$androidProjectName/build/tmp/dictionary/field_obfuscation_dictionary.txt"
+        assertThat(File(testProjectRoot.root, outputPath).exists()).isTrue()
+
+        outputPath = "$androidProjectName/build/tmp/dictionary/class_obfuscation_dictionary.txt"
+        assertThat(File(testProjectRoot.root, outputPath).exists()).isTrue()
+
+        outputPath = "$androidProjectName/build/tmp/dictionary/package_obfuscation_dictionary.txt"
+        assertThat(File(testProjectRoot.root, outputPath).exists()).isTrue()
     }
 }

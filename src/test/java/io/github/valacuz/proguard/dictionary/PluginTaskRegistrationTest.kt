@@ -57,7 +57,10 @@ class PluginTaskRegistrationTest {
         assertThat(outcome).isEqualTo(TaskOutcome.SUCCESS)
 
         // and there is output file in build/tmp folder
-        var outputPath = "$androidProjectName/build/tmp/dictionary/field_obfuscation_dictionary.txt"
+        var outputPath = "$androidProjectName/build/tmp/dictionary/proguard_dictionary_config.txt"
+        assertThat(File(testProjectRoot.root, outputPath).exists()).isTrue()
+
+        outputPath = "$androidProjectName/build/tmp/dictionary/field_obfuscation_dictionary.txt"
         assertThat(File(testProjectRoot.root, outputPath).exists()).isTrue()
 
         outputPath = "$androidProjectName/build/tmp/dictionary/class_obfuscation_dictionary.txt"
