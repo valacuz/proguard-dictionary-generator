@@ -32,7 +32,7 @@ class TestHelper {
 
     fun getDefaultProjectBuildDotGradleContent(
         agpVersion: String = "4.2.1",
-        pluginVersion: String = "1.0.0"
+        pluginVersion: String = "1.0.1"
     ) = """
     |buildscript {
     |  repositories {
@@ -50,7 +50,7 @@ class TestHelper {
     fun getDefaultProjectBuildDotKtsContent(
         agpVersion: String = "4.2.1",
         kotlinVersion: String = "1.4.32",
-        pluginVersion: String = "1.0.0"
+        pluginVersion: String = "1.0.1"
     ) = """
     |buildscript {
     |  repositories {
