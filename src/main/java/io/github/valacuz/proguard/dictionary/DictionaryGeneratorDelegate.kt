@@ -28,7 +28,7 @@ class DictionaryGeneratorDelegate {
         }
     }
 
-    private fun prepare(project: Project, config: DictionaryGeneratorConfig) {
+    private fun prepare(project: Project, config: DictionaryGeneratorPluginExtension) {
         if (project.isAndroidAppProject()) {
             addGenerateDictionaryTask(project, config)
         } else {
@@ -36,7 +36,7 @@ class DictionaryGeneratorDelegate {
         }
     }
 
-    private fun prepare(subprojects: Set<Project>, config: DictionaryGeneratorConfig) {
+    private fun prepare(subprojects: Set<Project>, config: DictionaryGeneratorPluginExtension) {
         val androidAppSubProject = subprojects.filter { it.isAndroidAppProject() }
         if (androidAppSubProject.isNotEmpty()) {
             androidAppSubProject.forEach {
@@ -47,7 +47,7 @@ class DictionaryGeneratorDelegate {
         }
     }
 
-    private fun addGenerateDictionaryTask(project: Project, config: DictionaryGeneratorConfig) {
+    private fun addGenerateDictionaryTask(project: Project, config: DictionaryGeneratorPluginExtension) {
         val androidExtension = project.getAndroidAppExtension()
         val enabledMinifiedVariants = androidExtension?.applicationVariants
             ?.filterMinifiedBuildType()
@@ -95,7 +95,7 @@ class DictionaryGeneratorDelegate {
     }
 
     @Throws(IllegalArgumentException::class)
-    private fun verifyConfiguration(extension: DictionaryGeneratorConfig) {
+    private fun verifyConfiguration(extension: DictionaryGeneratorPluginExtension) {
         if (extension.createConfigFile && extension.configFilePath.isBlank()) {
             throw IllegalArgumentException(
                 "Please set output path for field `configFilePath` when `isCreateConfigFile` is `true`."

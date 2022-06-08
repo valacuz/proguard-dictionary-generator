@@ -1,6 +1,6 @@
 package io.github.valacuz.proguard.dictionary.tasks.generate
 
-import io.github.valacuz.proguard.dictionary.DictionaryGeneratorConfig
+import io.github.valacuz.proguard.dictionary.DictionaryGeneratorPluginExtension
 import io.github.valacuz.proguard.dictionary.tasks.generate.factory.DefaultGeneratorFactory
 import io.github.valacuz.proguard.dictionary.tasks.generate.factory.GeneratorFactory
 import io.github.valacuz.proguard.dictionary.util.Logger
@@ -13,7 +13,7 @@ import java.io.IOException
 import javax.inject.Inject
 
 open class GenerateProguardDictionaryTask @Inject constructor(
-    @get:Nested val config: DictionaryGeneratorConfig,
+    @get:Nested val config: DictionaryGeneratorPluginExtension,
     @get:Input val isEnabledLog: Boolean,
 ) : DefaultTask() {
 

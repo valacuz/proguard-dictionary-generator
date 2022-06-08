@@ -25,7 +25,7 @@ This plugin creates dictionaries for Proguard / R8 [code obfuscation process](ht
     buildscript {
 
         dependencies {
-            classpath "io.github.valacuz:proguard-dict-generator:1.0.0"
+            classpath "io.github.valacuz:proguard-dict-generator:1.0.1"
         }
     }
     ```
@@ -35,7 +35,7 @@ This plugin creates dictionaries for Proguard / R8 [code obfuscation process](ht
     buildscript {
 
         dependencies {
-            classpath ("io.github.valacuz:proguard-dict-generator:1.0.0")
+            classpath ("io.github.valacuz:proguard-dict-generator:1.0.1")
         }
     }
     ```
@@ -44,6 +44,8 @@ This plugin creates dictionaries for Proguard / R8 [code obfuscation process](ht
 
     For **Groovy**,
     ```groovy
+   import io.github.valacuz.proguard.dictionary.DictionaryGeneratorPluginExtension
+
     plugins {
         id 'io.github.valacuz.proguard-dictionary-generator'
     }
@@ -51,6 +53,8 @@ This plugin creates dictionaries for Proguard / R8 [code obfuscation process](ht
 
     For **Kotlin**,
     ```kotlin
+   import io.github.valacuz.proguard.dictionary.DictionaryGeneratorPluginExtension
+
     plugins {
         id("io.github.valacuz.proguard-dictionary-generator")
     }
@@ -69,7 +73,7 @@ This plugin creates dictionaries for Proguard / R8 [code obfuscation process](ht
             proguardFiles (
                 getDefaultProguardFile('proguard-android-optimize.txt'),
                 'proguard-rules.pro',
-                'build/tmp/dictionary/proguard_dictionary_config.txt' // Add config file
+                DictionaryGeneratorPluginExtension.defaultConfigFileName // Add config file
             )
         }
     }
@@ -84,7 +88,7 @@ This plugin creates dictionaries for Proguard / R8 [code obfuscation process](ht
             proguardFiles (
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
-                "build/tmp/dictionary/proguard_dictionary_config.txt" // Add config file
+                DictionaryGeneratorPluginExtension.defaultConfigFileName // Add config file
             )
         }
     }
