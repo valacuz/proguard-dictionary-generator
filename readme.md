@@ -14,11 +14,15 @@ This plugin creates dictionaries for Proguard / R8 [code obfuscation process](ht
 <br/>
 
 ## Installation
+
+
+For later version of plugin DSL, you can look for installation guide at [plugin page on Gradle](https://plugins.gradle.org/plugin/io.github.valacuz.proguard-dictionary-generator).
+
+
 1. Make sure you enable minify on your android application module and [customize keep rules](https://developer.android.com/studio/build/shrink-code#keep-code).
 
-2. For later version of plugin DSL, you can look for installation guide at [plugin page on Gradle](https://plugins.gradle.org/plugin/io.github.valacuz.proguard-dictionary-generator).
 
-3. Add the plugin as dependency on root project's `build.gradle`.
+2. Add the plugin as dependency on root project's `build.gradle`.
 
     For **Groovy**,
     ```groovy
@@ -40,7 +44,7 @@ This plugin creates dictionaries for Proguard / R8 [code obfuscation process](ht
     }
     ```
 
-4. Apply plugin on app module's `build.gradle`.
+3. Apply plugin on app module's `build.gradle`.
 
     For **Groovy**,
     ```groovy
@@ -60,9 +64,9 @@ This plugin creates dictionaries for Proguard / R8 [code obfuscation process](ht
     }
     ```
 
-5. Configure obfuscation dictionary. 
+4. Configure obfuscation dictionary. 
 
-    5A. By default, plugin creates a configuration file which is able to add on `proguardFiles()` on app module's `build.gradle` collection, and it is still able to build application without error even file is missing.
+    4A. By default, plugin creates a configuration file which is able to add on `proguardFiles()` on app module's `build.gradle` collection, and it is still able to build application without error even file is missing.
 
     For **Groovy**,
     ```groovy
@@ -94,25 +98,25 @@ This plugin creates dictionaries for Proguard / R8 [code obfuscation process](ht
     }
     ```
 
-    The path `build/tmp/dictionary/proguard_dictionary_config.txt` is output path of configuration file, and it's hard-coded.
+    The constant `DictionaryGeneratorPluginExtension.DEFAULT_CONFIG_FILE_PATH` refers to path `build/tmp/dictionary/proguard_dictionary_config.txt` which is default output path of configuration file. You can change it and don't forget to editing field `configFilePath`.
 
     ## alternative way
 
-    5B. Add it manually on app module's `proguard-rules.pro` but make sure file is exists or code obfuscation task will fail.
+    4B. Add it manually on app module's `proguard-rules.pro` but make sure file is exists or code obfuscation task will fail.
     ```
     -obfuscationdictionary build/tmp/dictionary/field_obfuscation_dictionary.txt
     -classobfuscationdictionary build/tmp/dictionary/class_obfuscation_dictionary.txt
     -packageobfuscationdictionary build/tmp/dictionary/package_obfuscation_dictionary.txt
     ```
 
-6. After perform gradle sync. You can verify tasks are registered by run `./gradlew tasks` (for Windows, `.\gradlew tasks`). There should be message like this on task output (generated task name are base on build variant configuration).
+5. After perform gradle sync. You can verify tasks are registered by run `./gradlew tasks` (for Windows, `.\gradlew tasks`). There should be message like this on task output (generated task name are base on build variant configuration).
     ```
     Build tasks
     -----------
     generateProguardDictRelease - Generates dictionary for Proguard or R8 code obfuscation.
     ```
 
-7. Don't forget to upload `mapping.txt` to Google Play Store or if you build an AAB (Android App Bundle) file, mapping is included in the archive.
+6. Don't forget to upload `mapping.txt` to Google Play Store or if you build an AAB (Android App Bundle) file, mapping is included in the archive.
 
 [Go to table of content](#table-of-content)
 <br/>
@@ -145,6 +149,8 @@ extensions.configure(DictionaryGeneratorPluginExtension::class) {
     variantNameFilter = null // Regex pattern
 }
 ```
+
+more explanation [here](config_guide.md)
 
 
 [Go to table of content](#table-of-content)
